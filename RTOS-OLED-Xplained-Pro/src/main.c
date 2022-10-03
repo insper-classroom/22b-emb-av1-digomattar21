@@ -166,35 +166,42 @@ static void task_motor(void *pvParameters) {
 	for (;;)  {
 		if (xQueueReceive(xQueueSteps, &passos, (TickType_t) 100)) {
 			printf("Recebeu Passo: %d\n", passos);
-			//RTT_init(0.25, 0, RTT_MR_RTTINCIEN);
 			RTT_init(200, 1, RTT_MR_RTTINCIEN);
-			 //clr set x numero de passos
+		}
+		if(passos>0){
+			if(xSemaphoreTake(xSemaphoreRTT, 500 / portTICK_PERIOD_MS) == pdTRUE){
+				pio_set(PIO_4, PIO_4_IDX_MASK); //D
+				pio_clear(PIO_3, PIO_3_IDX_MASK); //C
+				pio_clear(PIO_2, PIO_2_IDX_MASK); //B
+				pio_clear(PIO_1, PIO_1_IDX_MASK); //A
+				passos-=1;
+			}
 			
+			if(xSemaphoreTake(xSemaphoreRTT, 500 / portTICK_PERIOD_MS) == pdTRUE){
+				pio_clear(PIO_4, PIO_4_IDX_MASK); //D
+				pio_set(PIO_3, PIO_3_IDX_MASK); //C
+				pio_clear(PIO_2, PIO_2_IDX_MASK); //B
+				pio_clear(PIO_1, PIO_1_IDX_MASK); //A
+				passos-=1;
+			}
+			
+			if(xSemaphoreTake(xSemaphoreRTT, 500 / portTICK_PERIOD_MS) == pdTRUE){
+				pio_clear(PIO_4, PIO_4_IDX_MASK); //D
+				pio_clear(PIO_3, PIO_3_IDX_MASK); //C
+				pio_set(PIO_2, PIO_2_IDX_MASK); //B
+				pio_clear(PIO_1, PIO_1_IDX_MASK); //A
+				passos-=1;
+			}
+			if(xSemaphoreTake(xSemaphoreRTT, 500 / portTICK_PERIOD_MS) == pdTRUE){
+				pio_clear(PIO_4, PIO_4_IDX_MASK); //D
+				pio_clear(PIO_3, PIO_3_IDX_MASK); //C
+				pio_clear(PIO_2, PIO_2_IDX_MASK); //B
+				pio_set(PIO_1, PIO_1_IDX_MASK); //
+				passos-=1;
+			} ;
 		}
 		
-		while(count < passos){
-			xSemaphoreTake(xSemaphoreRTT, 5 / portTICK_PERIOD_MS) == pdTRUE;
-			pio_set(PIO_4, PIO_4_IDX_MASK); //D
-			pio_clear(PIO_3, PIO_3_IDX_MASK); //C
-			pio_clear(PIO_2, PIO_2_IDX_MASK); //B
-			pio_clear(PIO_1, PIO_1_IDX_MASK); //A
-			xSemaphoreTake(xSemaphoreRTT, 5 / portTICK_PERIOD_MS) == pdTRUE ;
-			pio_clear(PIO_4, PIO_4_IDX_MASK); //D
-			pio_set(PIO_3, PIO_3_IDX_MASK); //C
-			pio_clear(PIO_2, PIO_2_IDX_MASK); //B
-			pio_clear(PIO_1, PIO_1_IDX_MASK); //A
-			xSemaphoreTake(xSemaphoreRTT, 5 / portTICK_PERIOD_MS) == pdTRUE ;
-			pio_clear(PIO_4, PIO_4_IDX_MASK); //D
-			pio_clear(PIO_3, PIO_3_IDX_MASK); //C
-			pio_set(PIO_2, PIO_2_IDX_MASK); //B
-			pio_clear(PIO_1, PIO_1_IDX_MASK); //A
-			xSemaphoreTake(xSemaphoreRTT, 5 / portTICK_PERIOD_MS) == pdTRUE ;
-			pio_clear(PIO_4, PIO_4_IDX_MASK); //D
-			pio_clear(PIO_3, PIO_3_IDX_MASK); //C
-			pio_clear(PIO_2, PIO_2_IDX_MASK); //B
-			pio_set(PIO_1, PIO_1_IDX_MASK); //A
-			count++;
-		}
+		
 		
 		
 
